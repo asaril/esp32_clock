@@ -1,0 +1,84 @@
+esphome:
+  name: esphome-clock
+  friendly_name: ESPHome Clock
+
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+
+# Enable logging
+logger:
+  logs:
+    sensor: INFO
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: ""
+
+ota:
+
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "ESP32Clock"
+    password: "fallBackPass"
+
+captive_portal:
+
+external_components:
+  - source:
+      type: local
+      path: components
+
+time:
+  - platform: sntp
+    id: sntp_time
+    timezone: Europe/Berlin
+    on_time:
+      - seconds: 10
+        then:
+          - logger.log:
+              level: INFO
+              format: "%2d%2d%2d%2d"
+              args: ['int(id(runtime).state/3600)%24', 'int(id(runtime).state/60)%60', 'int(id(runtime).state)%60', 'int(id(runtime).state-int(id(runtime).state)*25)']
+
+spi:
+  clk_pin: GPIO18
+  mosi_pin: GPIO19
+  
+sensor:
+  - platform: uptime
+    id: runtime
+    update_interval: 100ms
+
+display:
+  - platform: spi_74hc595_display
+    cs_pin: GPIO5
+    data_rate: 5MHz
+    num_chips: 3
+    update_interval: 40ms
+    lambda: |-
+      static int clock_frames=0;
+      static int old_clock=0;
+
+      if(id(sntp_time).now().second!=old_clock){
+        clock_frames=0;
+        old_clock=id(sntp_time).now().second;
+      } else {
+        clock_frames++;
+      }
+
+      it.strftime(0, "%H%M%s", id(sntp_time).now());
+      it.printf(7, "%2d", clock_frames);
+      /*it.strftime(8, "%H%M%s", id(sntp_time).now());*/
+      /*it.printf(11, "%1d", 0)*/
+      it.printf(12, "%2d%2d%2d%2d", int(id(runtime).state/3600)%24, int(id(runtime).state/60)%60, int(id(runtime).state)%60, int(id(runtime).state-int(id(runtime).state)*25) );
+      
+
+    
