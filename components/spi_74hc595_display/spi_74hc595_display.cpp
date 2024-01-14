@@ -136,7 +136,19 @@ void SPI_74HC595_DISPLAYComponent::display() {
       }
     }
     this->disable();
+    // todo: add delay here for duty cycle adjustment?
   }
+ // zero out everything to have a somewhat uniform duty cycle for all digits
+  this->enable();
+  for (uint8_t j = 0; j < this->num_chips_; j++) {
+    if (reverse_) {
+      this->send_byte_(0, 0);
+    } else {
+      this->send_byte_(0, 0);
+    }
+  }
+  // todo: add delay here for duty cycle adjustment?
+  this->disable();
 }
 
 void SPI_74HC595_DISPLAYComponent::send_byte_(uint8_t a_register, uint8_t data) {
