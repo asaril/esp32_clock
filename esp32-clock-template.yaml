@@ -45,12 +45,16 @@ time:
     id: sntp_time
     timezone: Europe/Berlin
     on_time:
-      - seconds: 10
+      - seconds: /10
         then:
           - logger.log:
               level: INFO
               format: "%2d %2d %2d %2d"
-              args: ['int(id(runtime).state/3600)%24', 'int(id(runtime).state/60)%60', 'int(id(runtime).state)%60', 'int(id(runtime).state-int(id(runtime).state)*25)']
+              args:
+                - 'int(id(runtime).state/3600) - int(id(runtime).state/86400)*86400'
+                - 'int(id(runtime).state/60) - int(id(runtime).state/3600)*3600'
+                - 'int(id(runtime).state) - int(id(runtime).state/60)*60'
+                - 'int((id(runtime).state - int(id(runtime).state))*25)'
 
 spi:
   clk_pin: GPIO18
@@ -78,14 +82,22 @@ display:
         clock_frames++;
       }
 
-      it.strftime(0, "%H%M%s", id(sntp_time).now());
-      it.printf(7, "%2d", clock_frames);
-      it.printf(8, ".*-_'`,0");
-      /*it.strftime(8, "%H%M%s", id(sntp_time).now());*/
-      /*it.printf(11, "%1d", 0)*/
-      it.printf(12, "%2d%2d%2d%2d", int(id(runtime).state/3600)%24, int(id(runtime).state/60)%60, int(id(runtime).state)%60, int(id(runtime).state-int(id(runtime).state)*25) );
+      it.printf(0, ".*-_'`,0");
+      /*it.strftime(0, "%H%M%s", id(sntp_time).now());*/
+      /*it.printf(6, "%2d", clock_frames);*/
 
-# the second display should display a test string to figure out the digit and segment map:
+      it.strftime(8, "%H%M%s", id(sntp_time).now());
+      it.printf(14, "%2d", clock_frames);
+      /*it.strftime(8, "%H%M%s", id(sntp_time).now());*/
+      /*it.printf(14, "%1d", 0)*/
+
+      it.printf(16, "%2d%2d%2d%2d",
+        int(id(runtime).state/3600) - int(id(runtime).state/86400)*86400,
+        int(id(runtime).state/60) - int(id(runtime).state/3600)*3600,
+        int(id(runtime).state) - int(id(runtime).state/60)*60,
+        int((id(runtime).state - int(id(runtime).state))*25) );
+
+# the first display should display a test string to figure out the digit and segment map:
 # digit 0: >.< character (dot segment on)
 # digit 1: >*< character (upper segment on)
 # digit 2: >-< character (middle segment on)
