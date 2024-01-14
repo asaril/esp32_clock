@@ -51,8 +51,8 @@ time:
               level: INFO
               format: "%2d %2d %2d %2d"
               args:
-                - 'uint32_t(id(runtime).state/3600) - uint32_t(id(runtime).state/86400)*86400'
-                - 'uint32_t(id(runtime).state/60) - uint32_t(id(runtime).state/3600)*3600'
+                - 'uint32_t(id(runtime).state/3600) - uint32_t(id(runtime).state/86400)*1440'
+                - 'uint32_t(id(runtime).state/60) - uint32_t(id(runtime).state/3600)*60'
                 - 'uint32_t(id(runtime).state) - uint32_t(id(runtime).state/60)*60'
                 - 'uint32_t((id(runtime).state - uint32_t(id(runtime).state))*25)'
 
@@ -92,8 +92,8 @@ display:
       /*it.printf(14, "%1d", 0)*/
 
       it.printf(16, "%2d%2d%2d%2d",
-        uint32_t(id(runtime).state/3600) - uint32_t(id(runtime).state/86400)*86400,
-        uint32_t(id(runtime).state/60) - uint32_t(id(runtime).state/3600)*3600,
+        uint32_t(id(runtime).state/3600) - uint32_t(id(runtime).state/86400)*1440,
+        uint32_t(id(runtime).state/60) - uint32_t(id(runtime).state/3600)*60,
         uint32_t(id(runtime).state) - uint32_t(id(runtime).state/60)*60,
         uint32_t((id(runtime).state - uint32_t(id(runtime).state))*25) );
 
