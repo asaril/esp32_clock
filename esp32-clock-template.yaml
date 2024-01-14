@@ -31,6 +31,9 @@ wifi:
 
 captive_portal:
 
+web_server:
+  local: true
+
 external_components:
   - source:
       type: local
@@ -45,7 +48,7 @@ time:
         then:
           - logger.log:
               level: INFO
-              format: "%2d%2d%2d%2d"
+              format: "%2d %2d %2d %2d"
               args: ['int(id(runtime).state/3600)%24', 'int(id(runtime).state/60)%60', 'int(id(runtime).state)%60', 'int(id(runtime).state-int(id(runtime).state)*25)']
 
 spi:
