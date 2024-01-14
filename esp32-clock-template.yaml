@@ -51,10 +51,10 @@ time:
               level: INFO
               format: "%2d %2d %2d %2d"
               args:
-                - 'int(id(runtime).state/3600) - int(id(runtime).state/86400)*86400'
-                - 'int(id(runtime).state/60) - int(id(runtime).state/3600)*3600'
-                - 'int(id(runtime).state) - int(id(runtime).state/60)*60'
-                - 'int((id(runtime).state - int(id(runtime).state))*25)'
+                - 'uint32_t(id(runtime).state/3600) - uint32_t(id(runtime).state/86400)*86400'
+                - 'uint32_t(id(runtime).state/60) - uint32_t(id(runtime).state/3600)*3600'
+                - 'uint32_t(id(runtime).state) - uint32_t(id(runtime).state/60)*60'
+                - 'uint32_t((id(runtime).state - uint32_t(id(runtime).state))*25)'
 
 spi:
   clk_pin: GPIO18
@@ -72,8 +72,8 @@ display:
     num_chips: 3
     update_interval: 40ms
     lambda: |-
-      static int clock_frames=0;
-      static int old_clock=0;
+      static uint32_t clock_frames=0;
+      static uint32_t old_clock=0;
 
       if(id(sntp_time).now().second!=old_clock){
         clock_frames=0;
@@ -92,10 +92,10 @@ display:
       /*it.printf(14, "%1d", 0)*/
 
       it.printf(16, "%2d%2d%2d%2d",
-        int(id(runtime).state/3600) - int(id(runtime).state/86400)*86400,
-        int(id(runtime).state/60) - int(id(runtime).state/3600)*3600,
-        int(id(runtime).state) - int(id(runtime).state/60)*60,
-        int((id(runtime).state - int(id(runtime).state))*25) );
+        uint32_t(id(runtime).state/3600) - uint32_t(id(runtime).state/86400)*86400,
+        uint32_t(id(runtime).state/60) - uint32_t(id(runtime).state/3600)*3600,
+        uint32_t(id(runtime).state) - uint32_t(id(runtime).state/60)*60,
+        uint32_t((id(runtime).state - uint32_t(id(runtime).state))*25) );
 
 # the first display should display a test string to figure out the digit and segment map:
 # digit 0: >.< character (dot segment on)
