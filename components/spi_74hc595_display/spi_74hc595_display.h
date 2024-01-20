@@ -14,7 +14,7 @@ using spi_74hc595_display_writer_t = std::function<void(SPI_74HC595_DISPLAYCompo
 
 class SPI_74HC595_DISPLAYComponent : public PollingComponent,
                          public spi::SPIDevice<spi::BIT_ORDER_MSB_FIRST, spi::CLOCK_POLARITY_LOW,
-                                               spi::CLOCK_PHASE_LEADING, spi::DATA_RATE_1MHZ> {
+                                               spi::CLOCK_PHASE_LEADING, spi::DATA_RATE_10MHZ> {
  public:
   void set_writer(spi_74hc595_display_writer_t &&writer);
 

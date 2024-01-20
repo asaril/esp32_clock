@@ -68,9 +68,9 @@ sensor:
 display:
   - platform: spi_74hc595_display
     cs_pin: GPIO5
-    data_rate: 5MHz
+    data_rate: 10MHz
     num_chips: 3
-    update_interval: 40ms
+    update_interval: 16ms
     lambda: |-
       static uint32_t clock_frames=0;
       static uint32_t old_clock=0;
@@ -82,7 +82,7 @@ display:
         clock_frames++;
       }
 
-      it.printf(0, ".*-_'`,0");
+      it.printf(0, ".*`,_+'-");
       /*it.strftime(0, "%H%M%s", id(sntp_time).now());*/
       /*it.printf(6, "%2d", clock_frames);*/
 
@@ -99,10 +99,10 @@ display:
 
 # the first display should display a test string to figure out the digit and segment map:
 # digit 0: >.< character (dot segment on)
-# digit 1: >*< character (upper segment on)
-# digit 2: >-< character (middle segment on)
-# digit 3: >_< character (lower segment on)
-# digit 4: >'< character (upper left segment on)
-# digit 5: >`< character (upper right segment on)
-# digit 6: >,< character (lower right segment on)
-# digit 7: >9< character (all on, except lower left segment)
+# digit 1: >*< character (A upper segment on)
+# digit 2: >`< character (B upper right segment on)
+# digit 3: >,< character (C lower right segment on)
+# digit 4: >_< character (D lower segment on)
+# digit 5: >+< character (E lower left segment on)
+# digit 6: >'< character (F upper left segment on)
+# digit 7: >-< character (G middle segment on)
