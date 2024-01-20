@@ -127,7 +127,7 @@ void SPI_74HC595_DISPLAYComponent::dump_config() {
 }
 
 void SPI_74HC595_DISPLAYComponent::display() {
-  uint32_t delay = static_cast<uint64_t>(this->get_update_interval())*1000 / 9;
+  uint32_t delay = static_cast<uint64_t>(this->get_update_interval())*1000 / 8;
   for (uint8_t i = 0; i < 8; i++) {
     this->enable();
     for (uint8_t j = 0; j < this->num_chips_; j++) {
@@ -140,7 +140,6 @@ void SPI_74HC595_DISPLAYComponent::display() {
     this->disable();
     delay_microseconds_safe(delay);
   }
-  delay_microseconds_safe(delay);
  // zero out everything to have a somewhat uniform duty cycle for all digits
   this->enable();
   for (uint8_t j = 0; j < this->num_chips_; j++) {
@@ -150,7 +149,6 @@ void SPI_74HC595_DISPLAYComponent::display() {
       this->send_byte_(0, 0);
     }
   }
-  delay_microseconds_safe(delay);
   this->disable();
 }
 
