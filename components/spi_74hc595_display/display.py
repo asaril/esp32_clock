@@ -11,15 +11,18 @@ SPI_74HC595_DISPLAYComponent = spi_74hc595_display_ns.class_(
 )
 SPI_74HC595_DISPLAYComponentRef = SPI_74HC595_DISPLAYComponent.operator("ref")
 
-CONF_REVERSE_ENABLE = "reverse_enable"
+CONF_REVERSE = "reverse"
+CONF_SEGMENT_FIRST = "segment_first"
+CONF_COMMON_CATHODE = "common_cathode"
 
 CONFIG_SCHEMA = (
     display.BASIC_DISPLAY_SCHEMA.extend(
         {
             cv.GenerateID(): cv.declare_id(SPI_74HC595_DISPLAYComponent),
             cv.Optional(CONF_NUM_CHIPS, default=1): cv.int_range(min=1, max=255),
-            # cv.Optional(CONF_INTENSITY, default=15): cv.int_range(min=0, max=15),
-            cv.Optional(CONF_REVERSE_ENABLE, default=False): cv.boolean,
+            cv.Optional(CONF_REVERSE, default=False): cv.boolean,
+            cv.Optional(CONF_SEGMENT_FIRST, default=False): cv.boolean,
+            cv.Optional(CONF_COMMON_CATHODE, default=False): cv.boolean,
         }
     )
     .extend(cv.polling_component_schema("1s"))
@@ -33,8 +36,9 @@ async def to_code(config):
     await display.register_display(var, config)
 
     cg.add(var.set_num_chips(config[CONF_NUM_CHIPS]))
-    # cg.add(var.set_intensity(config[CONF_INTENSITY]))
-    cg.add(var.set_reverse(config[CONF_REVERSE_ENABLE]))
+    cg.add(var.set_reverse(config[CONF_REVERSE]))
+    cg.add(var.set_segment_first(config[CONF_SEGMENT_FIRST]))
+    cg.add(var.set_common_cathode(config[CONF_COMMON_CATHODE]))
 
     if CONF_LAMBDA in config:
         lambda_ = await cg.process_lambda(

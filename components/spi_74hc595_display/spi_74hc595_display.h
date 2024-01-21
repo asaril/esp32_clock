@@ -30,6 +30,8 @@ class SPI_74HC595_DISPLAYComponent : public PollingComponent,
 
   void set_num_chips(uint8_t num_chips);
   void set_reverse(bool reverse) { this->reverse_ = reverse; };
+  void set_segment_first(bool segment_first) { this->segment_first_ = segment_first; };
+  void set_common_cathode(bool common_cathode) { this->common_cathode_ = common_cathode; };
 
   /// Evaluate the printf-format and print the result at the given position.
   uint8_t printf(uint8_t pos, const char *format, ...) __attribute__((format(printf, 3, 4)));
@@ -54,6 +56,8 @@ class SPI_74HC595_DISPLAYComponent : public PollingComponent,
   uint8_t num_chips_{1};
   uint8_t *buffer_;
   bool reverse_{false};
+  bool segment_first_{false};
+  bool common_cathode_{false};
   optional<spi_74hc595_display_writer_t> writer_{};
 };
 

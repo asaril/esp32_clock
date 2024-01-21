@@ -128,13 +128,15 @@ void SPI_74HC595_DISPLAYComponent::dump_config() {
 
 void SPI_74HC595_DISPLAYComponent::display() {
   uint32_t delay = static_cast<uint64_t>(this->get_update_interval())*1000 / 8;
+  uint8_t flip_digit=(this->common_cathode_)?0xFF:0x00;
+  uint8_t flip_segment = ~flip_digit;
   for (uint8_t i = 0; i < 8; i++) {
     this->enable();
     for (uint8_t j = 0; j < this->num_chips_; j++) {
       if (reverse_) {
-        this->send_byte_(~(1U << i), buffer_[(num_chips_ - j - 1) * 8 + i]);
+        this->send_byte_((1U << i)^flip_digit, buffer_[(num_chips_ - j - 1) * 8 + i]^flip_segment);
       } else {
-        this->send_byte_(~(1U << i), buffer_[j * 8 + i]);
+        this->send_byte_((1U << i)^flip_digit, (buffer_[j * 8 + i])^flip_segment);
       }
     }
     this->disable();
@@ -143,18 +145,19 @@ void SPI_74HC595_DISPLAYComponent::display() {
  // zero out everything to have a somewhat uniform duty cycle for all digits
   this->enable();
   for (uint8_t j = 0; j < this->num_chips_; j++) {
-    if (reverse_) {
-      this->send_byte_(0, 0);
-    } else {
-      this->send_byte_(0, 0);
-    }
+    this->send_byte_(0, 0);
   }
   this->disable();
 }
 
-void SPI_74HC595_DISPLAYComponent::send_byte_(uint8_t a_register, uint8_t data) {
-  this->write_byte(a_register);
-  this->write_byte(data);
+void SPI_74HC595_DISPLAYComponent::send_byte_(uint8_t a_digit, uint8_t data) {
+  if(this->segment_first_){
+    this->write_byte(data);
+    this->write_byte(a_digit);
+  } else {
+    this->write_byte(a_digit);
+    this->write_byte(data);
+  }
 }
 
 void SPI_74HC595_DISPLAYComponent::update() {
