@@ -23,6 +23,9 @@ wifi_ssid: "ssidhere"
 wifi_password: "keyhere"
 ```
 
+Adapt the config flags `reverse`, `common_cathode`, and `segment_first` in the component configuration in the main YAML
+for your display type.
+
 Build and upload the config with esphome CLI, or the dashboard.
 See [the ESPHome CLI Getting Started Guide](https://esphome.io/guides/getting_started_command_line.html) 
 how to do that.
@@ -32,5 +35,4 @@ The driver in `components/` is directly based on the existing MAX7219 driver in 
 subject to the GPLv3 and MIT licenses, as outlined in the LICENSE document (also copied from ESPHome).
 
 ## Open Issues
-The actual segment mapping is currently untested, due to missing hardware. It currently is still 
-the same as in the MAX7219 driver.
+The actual segment mapping is not tested well, due to missing hardware.
