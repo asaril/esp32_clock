@@ -68,9 +68,12 @@ sensor:
 display:
   - platform: spi_74hc595_display
     cs_pin: GPIO5
-    data_rate: 10MHz
-    num_chips: 3
-    update_interval: 16ms
+    data_rate: 1MHz #10MHz
+    num_chips: 1 #3
+    update_interval: 4s #16ms
+    common_cathode: false
+    segment_first: false
+    reverse: false
     lambda: |-
       static uint32_t clock_frames=0;
       static uint32_t old_clock=0;
@@ -82,20 +85,22 @@ display:
         clock_frames++;
       }
 
-      it.printf(0, ".*`,_+'-");
-      /*it.strftime(0, "%H%M%s", id(sntp_time).now());*/
-      /*it.printf(6, "%2d", clock_frames);*/
+      //it.printf(0, ".*`,_+'-");
+      it.printf(0, "88888888");
+      //it.strftime(0, "%H%M%s", id(sntp_time).now());
+      //it.printf(6, "%2d", clock_frames);
 
-      it.strftime(8, "%H%M%s", id(sntp_time).now());
-      it.printf(14, "%2d", clock_frames);
+      //it.strftime(8, "%H%M%s", id(sntp_time).now());
+      //it.printf(14, "%2d", clock_frames);
       /*it.strftime(8, "%H%M%s", id(sntp_time).now());*/
       /*it.printf(14, "%1d", 0)*/
 
-      it.printf(16, "%2d%2d%2d%2d",
+      /*it.printf(16, "%02d%02d%02d%02d",
         uint32_t(id(runtime).state/3600) - uint32_t(id(runtime).state/86400)*1440,
         uint32_t(id(runtime).state/60) - uint32_t(id(runtime).state/3600)*60,
         uint32_t(id(runtime).state) - uint32_t(id(runtime).state/60)*60,
         uint32_t((id(runtime).state - uint32_t(id(runtime).state))*25) );
+        */
 
 # the first display should display a test string to figure out the digit and segment map:
 # digit 0: >.< character (dot segment on)
