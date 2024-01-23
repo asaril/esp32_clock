@@ -49,7 +49,7 @@ time:
         then:
           - logger.log:
               level: INFO
-              format: "%2d %2d %2d %2d"
+              format: "%2d:%2d:%2d.%2d"
               args:
                 - 'uint32_t(id(runtime).state/3600) - uint32_t(id(runtime).state/86400)*1440'
                 - 'uint32_t(id(runtime).state/60) - uint32_t(id(runtime).state/3600)*60'
@@ -70,7 +70,7 @@ display:
     cs_pin: GPIO5
     data_rate: 10MHz
     num_chips: 1
-    update_interval: 4ms
+    update_interval: 10ms
     reverse: false
     lambda: |-
       static uint32_t clock_frames=0;
@@ -83,14 +83,14 @@ display:
         clock_frames++;
       }
 
-      it.printf(0, ".*`,_+'-");
+      //it.printf(0, ".*`,_+'-");
       //it.printf(0, "88888888");
-      //it.strftime(0, "%H%M%s", id(sntp_time).now());
-      //it.printf(6, "%2d", clock_frames);
+      it.strftime(0, "%H%M%S", id(sntp_time).now());
+      it.printf(6, "%02d", clock_frames%100);
 
-      //it.strftime(8, "%H%M%s", id(sntp_time).now());
+      //it.strftime(8, "%H%M%S", id(sntp_time).now());
       //it.printf(14, "%2d", clock_frames);
-      /*it.strftime(8, "%H%M%s", id(sntp_time).now());*/
+      /*it.strftime(8, "%H%M%S", id(sntp_time).now());*/
       /*it.printf(14, "%1d", 0)*/
 
       /*it.printf(16, "%02d%02d%02d%02d",
