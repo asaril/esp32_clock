@@ -68,12 +68,10 @@ sensor:
 display:
   - platform: spi_74hc595_display
     cs_pin: GPIO5
-    data_rate: 1MHz #10MHz
-    num_chips: 1 #3
-    update_interval: 4s #16ms
-    # common_cathode: false
-    # segment_first: true
-    # reverse: false
+    data_rate: 10MHz
+    num_chips: 1
+    update_interval: 4ms
+    reverse: false
     lambda: |-
       static uint32_t clock_frames=0;
       static uint32_t old_clock=0;
@@ -85,8 +83,8 @@ display:
         clock_frames++;
       }
 
-      //it.printf(0, ".*`,_+'-");
-      it.printf(0, "88888888");
+      it.printf(0, ".*`,_+'-");
+      //it.printf(0, "88888888");
       //it.strftime(0, "%H%M%s", id(sntp_time).now());
       //it.printf(6, "%2d", clock_frames);
 
