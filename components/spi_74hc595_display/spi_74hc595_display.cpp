@@ -116,7 +116,13 @@ void SPI_74HC595_DISPLAYComponent::setup() {
   this->spi_setup();
   this->buffer_ = new uint8_t[this->num_chips_ * 8];  // NOLINT
   for (uint8_t i = 0; i < this->num_chips_ * 8; i++)
+  {
     this->buffer_[i] = 0;
+  }
+  if (this->common_cathode_){
+    this->flip_digit_=0xff;
+    this->flip_segment_= ~this->flip_digit;
+  }
 }
 
 void SPI_74HC595_DISPLAYComponent::dump_config() {
@@ -128,8 +134,6 @@ void SPI_74HC595_DISPLAYComponent::dump_config() {
 
 void SPI_74HC595_DISPLAYComponent::display() {
   uint32_t delay = static_cast<uint64_t>(this->get_update_interval())*1000 / 8;
-  uint8_t flip_digit=(this->common_cathode_)?0xFF:0x00;
-  uint8_t flip_segment = ~flip_digit;
   for (uint8_t i = 0; i < 8; i++) {
     this->enable();
     for (uint8_t j = 0; j < this->num_chips_; j++) {

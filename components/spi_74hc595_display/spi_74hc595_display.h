@@ -56,9 +56,15 @@ class SPI_74HC595_DISPLAYComponent : public PollingComponent,
   uint8_t num_chips_{1};
   uint8_t *buffer_;
   bool reverse_{false};
-  bool segment_first_{false};
+  bool reverse_chain_{false};
+  bool segment_first_{true};
   bool common_cathode_{false};
   optional<spi_74hc595_display_writer_t> writer_{};
+
+  uint8_t flip_digit_{0};
+  uint8_t flip_segment_{0xFF};
+  uint8_t digit_mask[8]{0x08,0x04,0x02,0x01,0x80,0x40,0x20,0x10};
+
 };
 
 }  // namespace spi_74hc595_display

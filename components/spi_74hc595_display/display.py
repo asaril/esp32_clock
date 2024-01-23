@@ -12,6 +12,7 @@ SPI_74HC595_DISPLAYComponent = spi_74hc595_display_ns.class_(
 SPI_74HC595_DISPLAYComponentRef = SPI_74HC595_DISPLAYComponent.operator("ref")
 
 CONF_REVERSE = "reverse"
+CONF_REVERSE_CHAIN = "reverse_chain"
 CONF_SEGMENT_FIRST = "segment_first"
 CONF_COMMON_CATHODE = "common_cathode"
 
@@ -21,7 +22,8 @@ CONFIG_SCHEMA = (
             cv.GenerateID(): cv.declare_id(SPI_74HC595_DISPLAYComponent),
             cv.Optional(CONF_NUM_CHIPS, default=1): cv.int_range(min=1, max=255),
             cv.Optional(CONF_REVERSE, default=False): cv.boolean,
-            cv.Optional(CONF_SEGMENT_FIRST, default=False): cv.boolean,
+            cv.Optional(CONF_REVERSE_CHAIN, default=False): cv.boolean,
+            cv.Optional(CONF_SEGMENT_FIRST, default=True): cv.boolean,
             cv.Optional(CONF_COMMON_CATHODE, default=False): cv.boolean,
         }
     )
@@ -37,6 +39,7 @@ async def to_code(config):
 
     cg.add(var.set_num_chips(config[CONF_NUM_CHIPS]))
     cg.add(var.set_reverse(config[CONF_REVERSE]))
+    cg.add(var.set_reverse_chain(config[CONF_REVERSE_CHAIN]))
     cg.add(var.set_segment_first(config[CONF_SEGMENT_FIRST]))
     cg.add(var.set_common_cathode(config[CONF_COMMON_CATHODE]))
 
