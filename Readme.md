@@ -6,14 +6,24 @@ by SN74HC595 shift registers.
 ## Hardware
 Connect the shift registers like this, or adapt the pin config as needed:
 
-- Data input (DIO) to ESP GPIO19
-- Shift clock input (SCK) to ESP GPIO18
-- Latch / register clock input (RCK) to ESP GPIO5
+- Data input (DIO) to ESP:
+  - GPIO23 (first display), 
+  - GPIO19 (second display), 
+  - GPIO22 (third display),
+  - GPIO21 (fourth display)
+- Shift clock input (SCK) to ESP GPIO18 (all displays)
+- Latch / register clock input (RCK) to ESP GPIO5 (all display)
 
-Keep in mind that the ESP32 is a 3.3V device when connecting to a 5V display.
+Keep in mind that the ESP32 is a 3.3V device when connecting to a 5V display. The shift registers should handle the 3.3V
+signals from the ESP, annd in some cases, 3.3V can also be used to power the displays at a lower brightness.
 
 
 ## Setup
+
+> Note: the QSPI driver in esphome is (as of 2024-01-28) not yet in the released package.
+> Install a suitable version directly from github with:
+> `pip install "esphome @ git+https://github.com/esphome/esphome@1fef769496ed89c0062d8e70f5964b8318ba4550"`
+
 Set the board type in the YAML (default should also work on most ESP32 devices)
 Adapt the config as needed for the fallback AP and if wanted, api key.
 Create a `secrets.yaml` containing this:
@@ -35,4 +45,4 @@ The driver in `components/` is directly based on the existing MAX7219 driver in 
 subject to the GPLv3 and MIT licenses, as outlined in the LICENSE document (also copied from ESPHome).
 
 ## Open Issues
-The actual segment mapping is not tested well, due to missing hardware.
+
