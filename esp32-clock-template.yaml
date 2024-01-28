@@ -44,17 +44,6 @@ time:
   - platform: sntp
     id: sntp_time
     timezone: Europe/Berlin
-    on_time:
-      - seconds: /10
-        then:
-          - logger.log:
-              level: INFO
-              format: "%02d:%02d:%02d.%02d"
-              args:
-                - 'uint32_t(id(runtime).state/3600) - uint32_t(id(runtime).state/86400)*1440'
-                - 'uint32_t(id(runtime).state/60) - uint32_t(id(runtime).state/3600)*60'
-                - 'uint32_t(id(runtime).state) - uint32_t(id(runtime).state/60)*60'
-                - 'uint32_t((id(runtime).state - uint32_t(id(runtime).state))*25)'
 
 spi:
   - id: quad_spi_bus
@@ -71,6 +60,84 @@ sensor:
     id: runtime
     update_interval: 100ms
 
+globals:
+  - id: countdown_end
+    type: time_t
+  - id: uptime_start
+    type: time_t
+
+number:
+  - platform: template
+    name: "Countdown set H"
+    id: cd_set_h
+    initial_value: 0
+    min_value: 0
+    max_value: 99
+    step: 1
+    optimistic: true
+    mode: box
+  - platform: template
+    name: "Countdown set M"
+    id: cd_set_m
+    initial_value: 0
+    min_value: 0
+    max_value: 59
+    step: 1
+    optimistic: true
+    mode: box
+  - platform: template
+    name: "Countdown set S"
+    id: cd_set_s
+    initial_value: 0
+    min_value: 0
+    max_value: 59
+    step: 1
+    optimistic: true
+    mode: box
+
+button:
+  - platform: template
+    name: "Countdown set"
+    on_press:
+      - lambda: |-
+          id(countdown_end) = 
+            id(sntp_time).timestamp_now()
+            + uint32_t(id(cd_set_h).state)*3600 
+            + uint32_t(id(cd_set_m).state)*60 
+            + uint32_t(id(cd_set_s).state);
+  - platform: template
+    name: "Countdown Minutes 1m"
+    on_press:
+      - lambda: |-
+          id(countdown_end) = id(sntp_time).timestamp_now() + 60;
+  - platform: template
+    name: "Countdown Minutes 5m"
+    on_press:
+      - lambda: |-
+          id(countdown_end) = id(sntp_time).timestamp_now() + 300;
+  - platform: template
+    name: "Countdown Minutes 10m"
+    on_press:
+      - lambda: |-
+          id(countdown_end) = id(sntp_time).timestamp_now() + 600;
+  - platform: template
+    name: "Countdown Hours 1h"
+    on_press:
+      - lambda: |-
+          id(countdown_end) = id(sntp_time).timestamp_now() + 3600;
+  - platform: template
+    name: "Countdown Hours 2h"
+    on_press:
+      - lambda: |-
+          id(countdown_end) = id(sntp_time).timestamp_now() + 7200;
+  - platform: template
+    name: "Runtime Reset"
+    on_press:
+      - lambda: |-
+          id(uptime_start) = id(runtime).state;
+
+
+
 display:
   - platform: qspi_74hc595_4x_display
     cs_pin: GPIO5
@@ -78,32 +145,46 @@ display:
     update_interval: 10ms
     spi_id: quad_spi_bus
     lambda: |-
+      static uint32_t last_micros=0;
       static uint32_t clock_frames=0;
       static uint32_t old_clock=0;
 
       if(id(sntp_time).now().second!=old_clock){
-        clock_frames=0;
+        last_micros = micros();
         old_clock=id(sntp_time).now().second;
       } else {
-        clock_frames++;
+        clock_frames = (micros()-last_micros)/10000;
       }
 
-      //it.printf(0, ".*`,_+'-");
-      //it.printf(0, "88888888");
-      it.strftime(0, "%H%M%S", id(sntp_time).now());
-      it.printf(6, "%02d", clock_frames%100);
+      /////////// first display
+      it.printf(0, ".*`,_+'-");
 
-      //it.strftime(8, "%H%M%S", id(sntp_time).now());
-      //it.printf(14, "%2d", clock_frames);
-      /*it.strftime(8, "%H%M%S", id(sntp_time).now());*/
-      /*it.printf(14, "%1d", 0)*/
+      /////////// second display
+      it.strftime(8, "%H%M%S", id(sntp_time).now());
+      it.printf(14, "%02d", clock_frames%100);
 
-      /*it.printf(16, "%02d%02d%02d%02d",
-        uint32_t(id(runtime).state/3600) - uint32_t(id(runtime).state/86400)*1440,
-        uint32_t(id(runtime).state/60) - uint32_t(id(runtime).state/3600)*60,
-        uint32_t(id(runtime).state) - uint32_t(id(runtime).state/60)*60,
-        uint32_t((id(runtime).state - uint32_t(id(runtime).state))*25) );
-        */
+      /////////// third display
+      {
+        double delta = id(runtime).state - id(uptime_start);
+        uint32_t hours = delta/3600;
+        delta -= hours*3600;
+        uint32_t minutes = delta/60;
+        delta -= minutes*60;
+        uint32_t seconds = delta;
+        uint32_t frames = (100*delta) - (100*seconds);
+        it.printf(16, "%02d%02d%02d%02d", hours, minutes, seconds, frames);
+      }
+
+      /////////// fourth display
+      if (id(countdown_end) > id(sntp_time).timestamp_now()) {
+        time_t delta=difftime(id(countdown_end), id(sntp_time).timestamp_now());
+        time_t hours = delta/3600;
+        delta -= hours*3600;
+        time_t minutes = (delta)/60;
+        delta -= minutes*60;
+        time_t seconds = delta;
+        it.printf(24, "%02ld%02ld%02ld%02d", hours, minutes, seconds, (99-clock_frames%100));
+      }
 
 # the first display should display a test string to figure out the digit and segment map:
 # digit 0: >.< character (dot segment on)
