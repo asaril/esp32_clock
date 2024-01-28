@@ -154,11 +154,12 @@ void QSPI_74HC595_4X_DISPLAYComponent::display()
     const uint8_t *buf_ptr = reinterpret_cast<const uint8_t *>(this->buffer_);
     for (uint8_t i = 0; i < 8; i++)
     {
+        uint32_t start = micros();
         this->enable();
         this->write_cmd_addr_data(0, 0, 0, 0, buf_ptr, 8, 4);
         buf_ptr += 8;
         this->disable();
-        delay_microseconds_safe(delay);
+        delay_microseconds_safe(delay - (micros() - start));
     }
     // zero out everything to have a somewhat uniform duty cycle for all digits
     this->enable();
