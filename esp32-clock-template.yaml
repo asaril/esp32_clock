@@ -5,7 +5,7 @@ esphome:
 esp32:
   board: esp32dev
   framework:
-    type: arduino
+    type: esp-idf
 
 # Enable logging
 logger:
@@ -49,7 +49,7 @@ time:
         then:
           - logger.log:
               level: INFO
-              format: "%2d:%2d:%2d.%2d"
+              format: "%02d:%02d:%02d.%02d"
               args:
                 - 'uint32_t(id(runtime).state/3600) - uint32_t(id(runtime).state/86400)*1440'
                 - 'uint32_t(id(runtime).state/60) - uint32_t(id(runtime).state/3600)*60'
@@ -57,8 +57,14 @@ time:
                 - 'uint32_t((id(runtime).state - uint32_t(id(runtime).state))*25)'
 
 spi:
-  clk_pin: GPIO18
-  mosi_pin: GPIO19
+  - id: quad_spi_bus
+    interface: spi3
+    clk_pin: 18
+    data_pins:
+      - 23
+      - 19
+      - 22
+      - 21
 
 sensor:
   - platform: uptime
@@ -66,12 +72,11 @@ sensor:
     update_interval: 100ms
 
 display:
-  - platform: spi_74hc595_display
+  - platform: qspi_74hc595_4x_display
     cs_pin: GPIO5
     data_rate: 10MHz
-    num_chips: 1
     update_interval: 10ms
-    reverse: false
+    spi_id: quad_spi_bus
     lambda: |-
       static uint32_t clock_frames=0;
       static uint32_t old_clock=0;
